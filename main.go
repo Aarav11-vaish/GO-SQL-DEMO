@@ -88,4 +88,21 @@ func main() {
 	all_records, err = getAllrecords(db)
 	fmt.Print(all_records)
 
+	// caling insertData function
+	fmt.Scan(&id)
+	name := ""
+	fmt.Scan(&name)
+	stipend := ""
+	fmt.Scan(&stipend)
+	err = insertData(db, id, name, stipend)
+	if err != nil {
+		fmt.Println("Error inserting data: ", err)
+		return
+	}
+	fmt.Println("Data inserted successfully")
+	fmt.Println("-----------------------------------")
+
+	all_records, err = getAllrecords(db)
+	fmt.Println(all_records)
+
 }
