@@ -21,6 +21,23 @@ func (r Record) String() string {
 	return fmt.Sprintf("InternID: %d, Name: %s, Stipend: %s", r.InternID, r.Name, r.Stipend)
 }
 
+func getAllrecords(db *sql.DB) ([]Record, error) {
+	rows, err := db.Query("select intern_id, name , stipend from intern_info")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()   // close the rows after function ends
+	var records []Record // slice of Record
+	for rows.Next() {
+		var record Record
+		if err := rows.Scan(&record.InternID, &record.Name, &record.Stipend); err != nil {
+			return nil, err
+		}
+		records = append(records, record)
+	}
+	return records, nil
+}
+
 func getRecordsWithID(db *sql.DB, id int) ([]Record, error) {
 	rows, err := db.Query("select intern_id, name, stipend from intern_info where intern_id = ?", id)
 	if err != nil {
@@ -65,6 +82,10 @@ func main() {
 	for _, record := range records {
 		fmt.Printf("%v\n", record)
 	}
-	// how to call 20th line?
+	fmt.Print("\n")
+
+	var all_records []Record
+	all_records, err = getAllrecords(db)
+	fmt.Print(all_records)
 
 }
