@@ -28,6 +28,13 @@ func getAllrecords(db *sql.DB) ([]Record, error) {
 	}
 	defer rows.Close()   // close the rows after function ends
 	var records []Record // slice of Record
+
+	// You’re holding:
+	// a DB connection
+	// server-side resources
+	// network buffers
+	// 👉 rows.Close() releases all of that.
+
 	for rows.Next() {
 		var record Record
 		if err := rows.Scan(&record.InternID, &record.Name, &record.Stipend); err != nil {
@@ -55,8 +62,23 @@ func getRecordsWithID(db *sql.DB, id int) ([]Record, error) {
 	}
 	return records, nil
 }
+
+type User struct {
+	Name string
+}
+
+func createUser() User {
+	u := User{Name: "Aarav"}
+	return u
+}
+
 func main() {
 	// Capture connection properties.
+	usePtr := createUser()
+	fmt.Println("User name is ", usePtr.Name)
+	fmt.Println("experimenting ", usePtr)
+	fmt.Println("experimenting ", &usePtr)
+	// return
 	configure := mysql.NewConfig()
 	fmt.Println("configure has the following data ", configure)
 	configure.User = os.Getenv("DBUSER")
