@@ -11,6 +11,11 @@ import (
 	// "os"
 )
 
+type recordResult struct {
+	records []Record
+	err     error
+}
+
 type Record struct {
 	InternID int
 	Name     string
@@ -126,5 +131,29 @@ func main() {
 
 	all_records, err = getAllrecords(db)
 	fmt.Println(all_records)
+
+	// we will make get data with id and get all data function calls in goroutine way
+
+	byId := make(chan recordResult)
+	allData := make(chan recordResult)
+	// we made channels
+	go asyncGetAllData(db, id, byId)
+	go asyncGetData(db, allData)
+	// calling goroutine functions
+	byIdResult := <-byId
+	// receiving from channel
+	if byIdResult.err != nil {
+		fmt.Println("Error fetching records by ID: ", byIdResult.err)
+		return
+
+	}
+	fmt.Println("Records fetched by ID: ", byIdResult.records)
+
+	allDataResult := <-allData
+	if allDataResult.err != nil {
+		fmt.Println("Error fetching all records: ", allDataResult.err)
+		return
+	}
+	fmt.Println("All records fetched: ", allDataResult.records)
 
 }
