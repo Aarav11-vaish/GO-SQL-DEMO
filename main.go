@@ -135,6 +135,7 @@ func main() {
 	// we will make get data with id and get all data function calls in goroutine way
 
 	byId := make(chan recordResult)
+
 	allData := make(chan recordResult)
 	// we made channels
 	go asyncGetAllData(db, id, byId)
